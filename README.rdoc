@@ -1,0 +1,5 @@
+= mongodb_adapter
+
+A mostly functional DataMapper adapter for MongoDB.
+
+4 specs are not parsing, to do with OR conditions or negated regular expressions
