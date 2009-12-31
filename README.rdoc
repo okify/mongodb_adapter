@@ -2,4 +2,5 @@
 
 A mostly functional DataMapper adapter for MongoDB.
 
-4 specs are not parsing, to do with OR conditions or negated regular expressions
+4 specs are not passing, to do with OR conditions or
+negated regular expressions.

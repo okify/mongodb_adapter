@@ -1,19 +1,42 @@
 require 'rubygems'
-require 'rake'
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "mongodb_adapter"
-    gem.summary = %Q{MongoDB adapter for DataMapper}
-    gem.email = "mark@okify.com"
-    gem.homepage = "http://github.com/okify/mongodb_adapter"
-    gem.authors = ["Mark Rendle"]
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
+require 'rake/gempackagetask'
 
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
+gemspec = Gem::Specification.new do |s|
+  s.platform = Gem::Platform::RUBY
+  s.name = "mongodb_adapter"
+  s.version = "0.1.0"
+  s.author = "Mark Rendle"
+  s.date = "2009-12-30"
+  s.email = "mark@okify.com"
+
+  s.add_dependency "mongo", ">= 0.18.0"
+
+  s.files = [
+    ".document",
+     ".gitignore",
+     "FIXME",
+     "LICENSE",
+     "README.rdoc",
+     "Rakefile",
+     "VERSION",
+     "mongodb_adapter.gemspec",
+     "lib/mongodb_adapter.rb",
+     "spec/mongodb_adapter_spec.rb",
+     "spec/spec_helper.rb"
+  ]
+  s.homepage = "http://github.com/okify/mongodb_adapter"
+  s.require_paths = ["lib"]
+  s.summary = "MongoDB adapter for DataMapper"
+  s.test_files = [
+    "spec/mongodb_adapter_spec.rb",
+     "spec/spec_helper.rb"
+  ]
+end
+
+Rake::GemPackageTask.new(gemspec) do |p|
+  p.need_tar = false
+  p.need_zip = true
 end
 
 require 'spec/rake/spectask'
@@ -27,7 +50,6 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
   spec.rcov = true
 end
-
 
 task :default => :spec
 
