@@ -4,3 +4,19 @@ A mostly functional DataMapper adapter for MongoDB.
 
 4 specs are not passing, to do with OR conditions or
 negated regular expressions.
+
+== Installation
+
+gem install mongodb_adapter
+
+== Usage
+
+adapter: mongodb
+database: databasename
+host: hostname   # defaults to 'localhost'
+port: portnum    # defaults to 27017
+
+== Notes
+
+Uses the 'mongo' gem. For extra performance you should install the
+'mongo_ext' gem which adds native compiled components.
