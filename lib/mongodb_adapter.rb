@@ -45,10 +45,13 @@ module DataMapper
         cur = collection.find(criteria)
         cur = cur.limit(query.limit) if query.limit
         cur.each do |document|
+          # __bignums array contains keys for Bignum properties (MongoDB doesn't support Bignum)
           document['__bignums'].each do |key|
             document[key] = document[key].to_i
           end
-          document['__discriminators'].each do |key|
+          # __discriminators array contains keys for Discriminator properties
+          (document['__discriminators'] || []).each do |key|
+            # Class from String
             document[key] = eval(document[key])
           end
           result << document
