@@ -27,6 +27,9 @@ module DataMapper
           collection = @db.collection(resource.model.storage_name)
           id_hash = {}
           Mongo::ObjectID.create_pk(id_hash)
+          if resource.respond_to?(:_id=)
+            resource._id = id_hash[:_id].to_s
+          end
           initialize_serial(resource, id_hash[:_id].to_s.to_i(16))
           doc = resource.attributes(:field)
           doc[:_id] = id_hash[:_id]
@@ -45,18 +48,15 @@ module DataMapper
         cur = collection.find(criteria)
         cur = cur.limit(query.limit) if query.limit
         cur.each do |document|
-          # __bignums array contains keys for Bignum properties (MongoDB doesn't support Bignum)
-          document['__bignums'].each do |key|
+          (document['__bignums'] || []).each do |key|
             document[key] = document[key].to_i
           end
-          # __discriminators array contains keys for Discriminator properties
           (document['__discriminators'] || []).each do |key|
-            # Class from String
             document[key] = eval(document[key])
           end
+          document['_id'] = document['_id'].to_s
           result << document
         end
-
         result
       end
 
@@ -64,11 +64,11 @@ module DataMapper
         collection = @db.collection(resources[0].model.storage_name)
         resources.each do |resource|
           doc = resource.attributes(:field)
-          serial = resource.model.serial(name).get(resource)
-          doc[:_id] = Mongo::ObjectID.from_string(serial.to_s(16))
           doc = stringify_bignums(doc)
           doc = stringify_discriminators(doc)
-          collection.save(doc)
+          doc['_id'] = get_mongo_id(resource)
+          doc[:_id] = doc['_id']
+          collection.save(doc, :safe => true)
         end
         resources.length
       end
@@ -77,8 +77,7 @@ module DataMapper
         collection = @db.collection(resources[0].model.storage_name)
         ids = []
         resources.each do |resource|
-          serial = resource.model.serial(name).get(resource)
-          ids << Mongo::ObjectID.from_string(serial.to_s(16))
+          ids << get_mongo_id(resource)
         end
         collection.remove(:_id => {'$in' => ids})
       end
@@ -111,6 +110,20 @@ module DataMapper
             end
           end
           hash
+        end
+
+        def get_mongo_id(resource)
+          if resource.respond_to?(:_id)
+            if resource._id.class == Mongo::ObjectID
+              id = resource._id
+            else
+              id = Mongo::ObjectID.from_string(resource._id.to_s)
+            end
+          else
+            serial = resource.model.serial(name).get(resource)
+            id = Mongo::ObjectID.from_string(serial.to_s(16))
+          end
+          id
         end
 
         def conditions_to_hash(conditions, hash = {}, negate = false)
