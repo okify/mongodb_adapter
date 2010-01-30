@@ -54,7 +54,7 @@ module DataMapper
           (document['__discriminators'] || []).each do |key|
             document[key] = eval(document[key])
           end
-          document['_id'] = document['_id'].to_s
+          #document['_id'] = document['_id'].to_s
           result << document
         end
         result
@@ -66,9 +66,8 @@ module DataMapper
           doc = resource.attributes(:field)
           doc = stringify_bignums(doc)
           doc = stringify_discriminators(doc)
-          doc['_id'] = get_mongo_id(resource)
-          doc[:_id] = doc['_id']
-          collection.save(doc, :safe => true)
+          _id = get_mongo_id(resource)
+          collection.update({'_id' => _id}, doc)
         end
         resources.length
       end
@@ -121,9 +120,9 @@ module DataMapper
             end
           else
             serial = resource.model.serial(name).get(resource)
-            id = Mongo::ObjectID.from_string(serial.to_s(16))
+            id = serial.to_s(16)
           end
-          id
+          id.to_s
         end
 
         def conditions_to_hash(conditions, hash = {}, negate = false)
