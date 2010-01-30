@@ -5,6 +5,9 @@ A mostly functional DataMapper adapter for MongoDB.
 4 specs are not passing, to do with OR conditions or
 negated regular expressions.
 
+Updating on Serial is also broken when Serial field is not called '_id'.
+So call Serial field '_id', OK?
+
 == Installation
 
 gem install mongodb_adapter

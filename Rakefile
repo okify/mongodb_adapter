@@ -5,9 +5,9 @@ require 'rake/gempackagetask'
 gemspec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.name = "mongodb_adapter"
-  s.version = "0.1.2"
+  s.version = "0.1.3"
   s.author = "Mark Rendle"
-  s.date = "2010-01-17"
+  s.date = "2010-01-30"
   s.email = "mark@okify.com"
 
   s.add_dependency "mongo", ">= 0.18.0"
